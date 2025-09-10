@@ -46,7 +46,7 @@ function Home() {
  }
 
   return (
-    <div className='h-10 w-auto bg-amber-300 p-10 m-5 '>
+    <div className='h-10 w-auto bg-amber-300 p-10 m-5  '>
         
         <nav className=' flex gap-30 justify-between '>
             {/* logo */}

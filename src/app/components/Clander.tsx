@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from "react-redux";
@@ -7,10 +7,14 @@ import { useParams } from "next/navigation"; // ✅ use this
 import supabase from "../lib/Supabase";
 import { RootState } from "../store/store";
 
-function CalendarComponent () {
+ function CalendarComponent () {
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(new Date());
 
   const { items } = useSelector((state: RootState) => state.user);
+
+   
+
+
 
 
 
@@ -36,7 +40,7 @@ function CalendarComponent () {
       return;
     }
 
-      // const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
 
     const checkIn = selectedDateTime;
@@ -62,7 +66,7 @@ function CalendarComponent () {
         
         name:selectedRoom.name,
         room_id: selectedRoom.id.toString(), // Convert to string if DB expects UUID
-        user_id: selectedRoom.id, // Convert to string if DB expects UUID
+        user_id: user?.id, // Convert to string if DB expects UUID
         check_in: checkIn.toISOString(),
         check_out: checkOut.toISOString(),
         status: "confirmed",

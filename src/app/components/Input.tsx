@@ -1,21 +1,20 @@
+import { UUID } from 'crypto'
 import React from 'react'
 
-type enummiro = {
-  className:string,
-  
-  
 
+type InputType = {
+
+  value:string,
+  onChange: React.ChangeEvent<HTMLInputElement>,
+  
+   name:string,
+  type:string,
 }
-function Input({
-  className
-    onChange: (_event: React.ChangeEvent<HTMLInputElement>) => void
-    ...props
-    value
-  }
-){
+
+  function Input(inputType:InputType){
   return (
     <div>
-      <input onChange={onChange} value={value} type="text" name="" id="" className={`flex justify-between items-center ${className}`}{...props}/>
+      <input onChange={inputType.onChange} value={inputType.value} type={inputType.type} name={inputType.name} id=""/>
 
 
     </div>
