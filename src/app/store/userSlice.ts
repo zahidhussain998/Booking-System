@@ -5,6 +5,7 @@ import  supabase  from "../lib/Supabase"
 
 
 type Room = {
+    base_price: any;
     image_Url: any;
     id: number
     name: string

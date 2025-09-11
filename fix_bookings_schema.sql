@@ -19,9 +19,11 @@ CREATE TABLE bookings (
     id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL REFERENCES rooms(id),
     user_id UUID NOT NULL REFERENCES auth.users(id),
+    name VARCHAR(255),
     check_in TIMESTAMP WITH TIME ZONE NOT NULL,
     check_out TIMESTAMP WITH TIME ZONE NOT NULL,
     status VARCHAR(50) DEFAULT 'confirmed',
+    final_price DECIMAL(10,2),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

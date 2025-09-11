@@ -9,13 +9,31 @@ import { RootState } from "../store/store";
 
  function CalendarComponent () {
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(new Date());
+  const [finalPrice, setFinalPrice] = useState<number>(0);
 
   const { items } = useSelector((state: RootState) => state.user);
 
-   
+  function calculatePrice(basePrice: number, checkIn: Date, availableSlots: number, totalSlots: number) {
+    let price = basePrice;
 
+    // Peak hours (6–9 PM → +20%)
+    const hour = checkIn.getHours();
+    if (hour >= 18 && hour <= 21) {
+      price *= 1.2;
+    }
 
+    // Few slots left (< 3 remaining → +30%)
+    if (availableSlots < 3) {
+      price *= 1.3;
+    }
 
+    // Low demand (more than 70% free → -10%)
+    if (availableSlots > totalSlots * 0.7) {
+      price *= 0.9;
+    }
+
+    return Math.round(price);
+  }
 
 
 
@@ -26,11 +44,34 @@ import { RootState } from "../store/store";
   // ✅ find the correct room
   const selectedRoom = items?.find((room) => String(room.id) === roomId);
 
+  // Calculate price when selectedDateTime or selectedRoom changes
+  useEffect(() => {
+    if (selectedDateTime && selectedRoom) {
+      const checkIn = selectedDateTime;
+      const checkOut = new Date(selectedDateTime.getTime() + 60 * 60 * 1000);
+
+      // Get existing bookings for this time slot
+      supabase
+        .from("bookings")
+        .select("*")
+        .eq("room_id", selectedRoom.id)
+        .gte("check_in", checkIn.toISOString())
+        .lt("check_out", checkOut.toISOString())
+        .then(({ data: existing }) => {
+          const totalSlots = 10;
+          const availableSlots = totalSlots - (existing?.length || 0);
+          const basePrice = selectedRoom.charge; // Use charge from room data
+          const calculatedPrice = calculatePrice(basePrice, checkIn, availableSlots, totalSlots);
+          setFinalPrice(calculatedPrice);
+        });
+    }
+  }, [selectedDateTime, selectedRoom]);
+
   const handleColor = (time: Date) => {
     return time.getHours() > 12 ? "text-green-600" : "text-red-600";
   };
 
-  const handleSave = async () => {
+const handleSave = async () => {
     if (!selectedDateTime) {
       alert("Please select a date and time first.");
       return;
@@ -40,9 +81,6 @@ import { RootState } from "../store/store";
       return;
     }
 
-      const { data: { user } } = await supabase.auth.getUser();
-
-
     const checkIn = selectedDateTime;
     const checkOut = new Date(selectedDateTime.getTime() + 60 * 60 * 1000);
 
@@ -50,7 +88,7 @@ import { RootState } from "../store/store";
     const { data: existing } = await supabase
       .from("bookings")
       .select("*")
-      .eq("room_id", selectedRoom.id.toString()) // Convert to string if DB expects UUID
+      .eq("room_id", selectedRoom.id)
       .gte("check_in", checkIn.toISOString())
       .lt("check_out", checkOut.toISOString());
 
@@ -59,17 +97,22 @@ import { RootState } from "../store/store";
       return;
     }
 
-    // insert booking ✅ use id not whole object
-    // Convert integers to strings if database expects UUID format
+    
+
+    // finalPrice is already calculated and stored in state
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // insert booking
     const { data, error } = await supabase.from("bookings").insert([
       {
-        
-        name:selectedRoom.name,
-        room_id: selectedRoom.id.toString(), // Convert to string if DB expects UUID
-        user_id: user?.id, // Convert to string if DB expects UUID
+        name: selectedRoom.name,
+        room_id: selectedRoom.id, // INTEGER type
+        user_id: user?.id, // UUID type
         check_in: checkIn.toISOString(),
         check_out: checkOut.toISOString(),
         status: "confirmed",
+        final_price: finalPrice, // DECIMAL type
       },
     ]);
 
@@ -106,6 +149,13 @@ import { RootState } from "../store/store";
       >
         Confirm Booking
       </button>
+
+      {finalPrice > 0 && (
+        <p className="text-lg font-semibold text-blue-600">
+          Price: ${finalPrice}
+        </p>
+      )}
+
     </div>
   );
 }
