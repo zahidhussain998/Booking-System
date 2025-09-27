@@ -6,6 +6,9 @@ import { useSelector } from "react-redux";
 import { useParams } from "next/navigation"; // ✅ use this
 import supabase from "../lib/Supabase";
 import { RootState } from "../store/store";
+import SubscribeComponent from "./subcribe/Subcribe-Payment";
+import { EmailTemplate } from "./EmailTamplate";
+import Link from "next/link";
 
  function CalendarComponent () {
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(new Date());
@@ -70,64 +73,34 @@ import { RootState } from "../store/store";
   const handleColor = (time: Date) => {
     return time.getHours() > 12 ? "text-green-600" : "text-red-600";
   };
+  const addToGoogleCalendar = () => {
+    if (!selectedDateTime || !selectedRoom) return;
+  
+    const checkIn = selectedDateTime.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    const checkOut = new Date(selectedDateTime.getTime() + 60 * 60 * 1000)
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .split(".")[0] + "Z";
+  
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      selectedRoom.name,
+      selectedRoom.discription,
+      selectedRoom.created_at,
+    )}&dates=${checkIn}/${checkOut}&details=Booking%20Confirmed&location=Online`;
 
-const handleSave = async () => {
-    if (!selectedDateTime) {
-      alert("Please select a date and time first.");
-      return;
-    }
-    if (!selectedRoom) {
-      alert("Room not found!");
-      return;
-    }
 
-    const checkIn = selectedDateTime;
-    const checkOut = new Date(selectedDateTime.getTime() + 60 * 60 * 1000);
-
-    // check for existing booking
-    const { data: existing } = await supabase
-      .from("bookings")
-      .select("*")
-      .eq("room_id", selectedRoom.id)
-      .gte("check_in", checkIn.toISOString())
-      .lt("check_out", checkOut.toISOString());
-
-    if (existing && existing.length > 0) {
-      alert("This slot is already booked. Please choose another time.");
-      return;
-    }
-
+  
+    window.open(url, "_blank");
     
 
-    // finalPrice is already calculated and stored in state
-
-    const { data: { user } } = await supabase.auth.getUser();
-
-    // insert booking
-    const { data, error } = await supabase.from("bookings").insert([
-      {
-        name: selectedRoom.name,
-        room_id: selectedRoom.id, // INTEGER type
-        user_id: user?.id, // UUID type
-        check_in: checkIn.toISOString(),
-        check_out: checkOut.toISOString(),
-        status: "confirmed",
-        final_price: finalPrice, // DECIMAL type
-      },
-    ]);
-
-    if (error) {
-      console.error(error);
-      alert("❌ Error saving booking");
-    } else {
-      alert("✅ Booking saved successfully!");
-      console.log(data);
-    }
   };
 
+
+
   return (
-    <div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center space-y-6">
-      <h2 className="text-xl font-bold text-gray-800">Book Your Slot</h2>
+
+    <div className="max-w- mx-auto bg-white rounded-2xl shadow-lg p-6 flex flex-col  space-y-6">
+      <h2 className="text-xl font-bold text-gray-800 ">Book Your Slot</h2>
 
       <div className="w-full">
         <label className="block text-gray-600 text-sm font-medium mb-2">
@@ -139,22 +112,48 @@ const handleSave = async () => {
           onChange={(date) => setSelectedDateTime(date)}
           timeClassName={handleColor}
           dateFormat="MMMM d, yyyy h:mm aa"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
-      <button
-        onClick={handleSave}
-        className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
-      >
-        Confirm Booking
-      </button>
+      
+
+
+   <form className="" action={`/screens/checkout_sessions?roomId=${selectedRoom?.id}&checkIn=${selectedDateTime?.toISOString()}&price=${finalPrice}`} method="POST">
 
       {finalPrice > 0 && (
-        <p className="text-lg font-semibold text-blue-600">
+        <p className="border w-20 font-bold font-black mb-5">
           Price: ${finalPrice}
         </p>
       )}
+      <section>
+
+        <div className="flex flex-col w-70 space-y-2 ">
+        <button className=" cursor-pointer bg-yellow-500 text-black px-14 py-2 rounded-lg" type="submit" role="link">
+          pay via stripe
+        </button>
+
+        
+        <form action="send mail">
+          <Link href="screens/send">
+          <>
+      <button onClick={addToGoogleCalendar} className="cursor-pointer bg-yellow-500 text-black px-4 py-2 rounded-lg">
+  Add to Google Calendar
+</button>
+          </>
+          </Link>
+
+        </form>
+
+        </div>
+      </section>
+
+        
+</form>
+
+
+
+
 
     </div>
   );

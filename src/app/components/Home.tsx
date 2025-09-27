@@ -6,9 +6,23 @@ import Link from 'next/link'
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 
+import {
+  Navbar,
+  NavBody,
+  NavItems,
+  MobileNav,
+  NavbarLogo,
+  NavbarButton,
+  MobileNavHeader,
+  MobileNavToggle,
+  MobileNavMenu,
+} from "@/components/ui/resizable-navbar";
 function Home() {
 
   const [user, setUser] = useState<any>(null)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+
 
   const supabase = createClientComponentClient()
 
@@ -45,28 +59,43 @@ function Home() {
     setUser(null)  
  }
 
+ const navItems = [
+   {
+     name: "Home",
+     link: "/",
+   },
+    {
+      name: "Create-Slot",
+      link: "/screens/PostBooking",
+    },
+   
+    {
+      name: "Booked-Slots",
+      link: "/screens/allbooked",
+    },
+  ];
+ 
+
+
   return (
-    <div className='h-10 w-auto bg-amber-300 p-10 m-5  '>
-        
-        <nav className=' flex gap-30 justify-between '>
-            {/* logo */}
-            logo
-            <ul className='flex gap-10 justify-center  '>
-               <Link href="/">
-                Home
-               </Link>
-               <Link href="/screens/booking">
-                Book Appointment
-               </Link>
-               <Link href="/screens/slots">
-                new slots  
-               </Link>
 
-            </ul>
-            <div className='flex space-x-5'>
+    <div>
+    {/* Background grid - only visible behind content */}
+    <div className="fixed inset-0 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem] -z-10"></div>
 
-              <p>Profile</p>
+    <div className=' sticky top-0 z-40'>
 
+        <div className="relative w-full">
+      <Navbar>
+        {/* Desktop Navigation */}
+        <NavBody>
+          <NavbarLogo />
+          <NavItems items={navItems} />
+          <div className="flex items-center gap-4">
+              <NavbarButton
+                variant="primary"
+                className="w-full"
+              >
             {!user ?
              (
               
@@ -76,11 +105,62 @@ function Home() {
 
              )}
 
-
-         
+              </NavbarButton>
+          </div>
+        </NavBody>
+ 
+        {/* Mobile Navigation */}
+        <MobileNav>
+          <MobileNavHeader>
+            <NavbarLogo />
+            <MobileNavToggle
+              isOpen={isMobileMenuOpen}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            />
+          </MobileNavHeader>
+ 
+          <MobileNavMenu
+            isOpen={isMobileMenuOpen}
+            onClose={() => setIsMobileMenuOpen(false)}
+          >
+            {navItems.map((item, idx) => (
+              <a
+                key={`mobile-link-${idx}`}
+                href={item.link}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="relative text-neutral-600 dark:text-neutral-300"
+              >
+                <span className="block">{item.name}</span>
+              </a>
+            ))}
+            <div className="flex w-full flex-col gap-4">
+              <NavbarButton
+                onClick={() => setIsMobileMenuOpen(false)}
+                variant="primary"
+                className="w-full"
+              >
+                Login
+              </NavbarButton>
+              <NavbarButton
+                onClick={() => setIsMobileMenuOpen(false)}
+                variant="primary"
+                className="w-full"
+              >
+                Book a call
+              </NavbarButton>
             </div>
-        </nav>
+          </MobileNavMenu>
+        </MobileNav>
+      </Navbar>
+ 
+      {/* Navbar */}
     </div>
+        
+     
+    </div>
+    </div>
+
+
   )
 }
 
