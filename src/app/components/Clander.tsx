@@ -123,7 +123,9 @@ useEffect(() => {
         room: selectedRoom.name,
         date: selectedDateTime.toLocaleString(),
       }),
+      
     })
+
 
     if (response.ok) {
       console.log('Email sent successfully')
