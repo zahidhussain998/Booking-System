@@ -1,18 +1,15 @@
-# Debugging and Fixing the 400 Bad Request Error
+# TODO: Fix OAuth State Mismatch and 401 Email Send Error
 
-## Debugging Steps:
-1. **Error Analysis**: The error is a 400 Bad Request on POST to Supabase /rest/v1/rooms endpoint.
-2. **Code Inspection**: Examined userSlice.ts for the addRoom thunk, which sends JSON payload via fetch.
-3. **Usage Search**: Found addRoom is dispatched in booking/page.tsx when creating a room.
-4. **Form Issues**: Discovered the submit button lacks type="submit", preventing form submission.
-5. **Image Handling**: Image upload is asynchronous but not awaited, leading to null/undefined image_url.
-6. **Field Mismatches**: Found inconsistencies like image_Url vs image_url, and potential typos in field names.
-7. **Auth Check**: Verified users are authenticated, but headers use anon key instead of session token.
+## Steps to Complete
+- [x] Edit src/middlwer.ts: Update matcher to exclude /auth/callback
+- [x] Edit src/app/utils/supabase/middlwer.ts: Fix allowed paths to include /screens/login and /auth/callback
+- [x] Edit src/app/auth/callback/page.tsx: Add error handling for OAuth params
+- [ ] Restart dev server if needed
+- [ ] Test Google login flow
+- [ ] Test addToGoogleCalendar email send (should resolve 401/400)
 
-## Fixes to Implement:
-- [ ] Fix submit button in booking/page.tsx to type="submit"
-- [ ] Correct field name from image_Url to image_url
-- [ ] Implement proper image upload handling (await completion before submission)
-- [ ] Update headers to use session access token instead of anon key
-- [ ] Verify Supabase table column names match the payload fields
-- [ ] Add error handling and loading states
+## Notes
+- OAuth state mismatch caused by middleware redirecting on callback before session set
+- Clander.tsx already fixed to prevent unauth requests and add logging
+- No Resend domain config needed for localhost
+- Route changed to expect body, client updated to send it

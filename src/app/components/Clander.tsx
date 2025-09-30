@@ -9,11 +9,12 @@ import { RootState } from "../store/store";
 import SubscribeComponent from "./subcribe/Subcribe-Payment";
 import { EmailTemplate } from "./EmailTamplate";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
 
  function CalendarComponent () {
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(new Date());
   const [finalPrice, setFinalPrice] = useState<number>(0);
-
+  const [userLog, setUserLog] = useState("")
   const { items } = useSelector((state: RootState) => state.user);
 
   function calculatePrice(basePrice: number, checkIn: Date, availableSlots: number, totalSlots: number) {
@@ -40,11 +41,18 @@ import Link from "next/link";
 
 
 
-  // ✅ get params using Next.js hook
+
+
+  //  get params using Next.js hook
   const params = useParams();
   const roomId = String(params.id);
 
-  // ✅ find the correct room
+  const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+  //  find the correct room
   const selectedRoom = items?.find((room) => String(room.id) === roomId);
 
   // Calculate price when selectedDateTime or selectedRoom changes
@@ -70,30 +78,60 @@ import Link from "next/link";
     }
   }, [selectedDateTime, selectedRoom]);
 
+  
+useEffect(() => {
+  async function getUserEmail() {
+    const { data } = await supabase.auth.getUser();
+    if (data?.user) {
+      setUserLog(data.user.email); // ✅ actual user email
+    } else {
+      console.error("No logged in user");
+    }
+  }
+  getUserEmail();
+}, []);
+
+
+
   const handleColor = (time: Date) => {
     return time.getHours() > 12 ? "text-green-600" : "text-red-600";
   };
-  const addToGoogleCalendar = () => {
+  const addToGoogleCalendar = async () => {
     if (!selectedDateTime || !selectedRoom) return;
-  
+
     const checkIn = selectedDateTime.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
     const checkOut = new Date(selectedDateTime.getTime() + 60 * 60 * 1000)
       .toISOString()
       .replace(/[-:]/g, "")
       .split(".")[0] + "Z";
-  
+
     const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-      selectedRoom.name,
-      selectedRoom.discription,
-      selectedRoom.created_at,
+      selectedRoom.name + ' ' + selectedRoom.discription + ' ' + selectedRoom.created_at
     )}&dates=${checkIn}/${checkOut}&details=Booking%20Confirmed&location=Online`;
 
 
-  
     window.open(url, "_blank");
-    
 
-  };
+    // Send email after adding to calendar
+
+      const response = await fetch('/screens/send', {
+    method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: "zahidzahidhussain@gmail.com", // <-- pass the user’s email directly
+        firstName: userLog.split("@")[0],
+        room: selectedRoom.name,
+        date: selectedDateTime.toLocaleString(),
+      }),
+    })
+
+    if (response.ok) {
+      console.log('Email sent successfully')
+    } else {
+      console.error('Failed to send email:', response.status)
+    }
+  } 
+
 
 
 
@@ -133,23 +171,16 @@ import Link from "next/link";
           pay via stripe
         </button>
 
-        
-        <form action="send mail">
-          <Link href="screens/send">
-          <>
-      <button onClick={addToGoogleCalendar} className="cursor-pointer bg-yellow-500 text-black px-4 py-2 rounded-lg">
-  Add to Google Calendar
-</button>
-          </>
-          </Link>
-
-        </form>
-
         </div>
       </section>
+</form>
+        
+        <button onClick={addToGoogleCalendar} className="cursor-pointer bg-yellow-500 text-black px-4 py-2 rounded-lg">
+  Add to Google Calendar
+</button>
+
 
         
-</form>
 
 
 
