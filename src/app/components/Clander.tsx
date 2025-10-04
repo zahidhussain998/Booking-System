@@ -113,27 +113,27 @@ useEffect(() => {
     window.open(url, "_blank");
 
     // Send email after adding to calendar
+    const response = await fetch('/screens/send', {
+  method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: "zahidzahidhussain@gmail.com", // <-- pass the user’s email directly
+      firstName: userLog.split("@")[0],
+      room: selectedRoom.name,
+      date: selectedDateTime.toLocaleString(),
+    }),
 
-      const response = await fetch('/screens/send', {
-    method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: "zahidzahidhussain@gmail.com", // <-- pass the user’s email directly
-        firstName: userLog.split("@")[0],
-        room: selectedRoom.name,
-        date: selectedDateTime.toLocaleString(),
-      }),
-      
-    })
-
-
-    if (response.ok) {
+    
+  })
+  
+  
+  if (response.ok) {
       console.log('Email sent successfully')
     } else {
       console.error('Failed to send email:', response.status)
     }
   } 
-
+  
 
 
 

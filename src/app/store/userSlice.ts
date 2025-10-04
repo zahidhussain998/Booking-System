@@ -46,9 +46,8 @@ const baseHeaders: HeadersInit = {
   'Content-Type': 'application/json',
 }
 
-export const addRoom = createAsyncThunk<Room, Omit<Room, 'id'>>(
-    'rooms/add',
-    async (payload) => {
+export const addRoom = createAsyncThunk<Room, Omit<Room, 'id'>>('rooms/add',
+     async (payload) => {
         const res = await fetch(`${BASE_URL}`, {
             method:'POST',
             headers : {...baseHeaders, prefer:'return=representation'},

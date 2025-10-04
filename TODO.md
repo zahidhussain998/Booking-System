@@ -1,15 +1,25 @@
-# TODO: Fix OAuth State Mismatch and 401 Email Send Error
+# TODO: Enhance Aesthetics of Slots Page Component
 
-## Steps to Complete
-- [x] Edit src/middlwer.ts: Update matcher to exclude /auth/callback
-- [x] Edit src/app/utils/supabase/middlwer.ts: Fix allowed paths to include /screens/login and /auth/callback
-- [x] Edit src/app/auth/callback/page.tsx: Add error handling for OAuth params
-- [ ] Restart dev server if needed
-- [ ] Test Google login flow
-- [ ] Test addToGoogleCalendar email send (should resolve 401/400)
+## Plan Overview
+Make the room listing component more aesthetic by adding modern UI elements, animations, and visual enhancements.
+
+## Steps
+- [x] Add page header with title and subtitle
+- [x] Import necessary components and icons (HoverBorderGradient, SparklesCore, lucide-react icons)
+- [x] Enhance room cards with icons for stats and improved hover effects
+- [x] Replace "Book Now" button with HoverBorderGradient component
+- [x] Add subtle sparkle background effect using SparklesCore
+- [x] Improve loading spinner design
+- [x] Enhance empty state with icons
+- [x] Refine spacing, typography, and add gradients
+- [x] Ensure better mobile responsiveness
+- [ ] Test visual appeal and functionality
+- [ ] Verify responsiveness on different screen sizes
+
+## Dependent Files
+- src/app/screens/slots/page.tsx
 
 ## Notes
-- OAuth state mismatch caused by middleware redirecting on callback before session set
-- Clander.tsx already fixed to prevent unauth requests and add logging
-- No Resend domain config needed for localhost
-- Route changed to expect body, client updated to send it
+- Use black and yellow theme consistently
+- Leverage available UI components for modern look
+- Ensure animations are subtle and enhance UX

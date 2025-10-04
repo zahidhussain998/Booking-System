@@ -18,7 +18,6 @@ export async function login(formData: FormData) {
 
   const { error } = await supabase.auth.signInWithPassword(data)
 
-    console.log("this is from the login",data)
 
   if (error) {
   console.log("Supabase login error:", error)
@@ -28,8 +27,7 @@ export async function login(formData: FormData) {
   revalidatePath('/', 'layout')
   redirect('/')
 };
-
-  export async function handleGoogleLogin ()  {
+ export async function handleGoogleLogin ()  {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -57,7 +55,6 @@ export async function signup(formData: FormData) {
   }
 
   const { error } = await supabase.auth.signUp(data)
-    console.log("this is from the signup",data)
 
 
   if (error) {

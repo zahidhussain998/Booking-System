@@ -25,9 +25,7 @@ const OneTapComponent = () => {
   const router = useRouter()
 
   const initializeGoogleOneTap = async () => {
-    console.log('Initializing Google One Tap')
     const [nonce, hashedNonce] = await generateNonce()
-    console.log('Nonce: ', nonce, hashedNonce)
 
     // check if there's already an existing session before initializing the one-tap UI
     const { data, error } = await supabase.auth.getSession()

@@ -1,9 +1,8 @@
-
 import { Resend } from 'resend'
 
 import { NextRequest, NextResponse } from 'next/server'
 
-const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req:NextRequest) {
   try {
@@ -13,9 +12,9 @@ export async function POST(req:NextRequest) {
       return NextResponse.json({error:"email required"}, {status:400})
     }
 
-    if (!process.env.NEXT_PUBLIC_RESEND_API_KEY) {
-      console.log('NEXT_PUBLIC_RESEND_API_KEY not set')
-      return NextResponse.json({error:"NEXT_PUBLIC_RESEND_API_KEY not configured"}, {status:500})
+    if (!process.env.RESEND_API_KEY) {
+      console.log('RESEND_API_KEY not set')
+      return NextResponse.json({error:"RESEND_API_KEY not configured"}, {status:500})
     }
 
     const text = `Booking Confirmation
@@ -30,20 +29,25 @@ Email: ${email}
 
 Thank you for choosing our service!`
 
+console.log(room)
+console.log(date)
+console.log(email)
+console.log(firstName)
+
     const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev',
-      to: ["zahidzahidhusssain@gmail.com"],
+      from: 'Acme <onboarding@resend.dev>',
+      to: "zahidzahidhusssain@gmail.com",
       subject: 'Booking Confirmation',
       text,
     });
 
     if (error) {
       console.log('Resend error:', error)
-      return Response.json(error, { status: 500 })
+      return NextResponse.json(error, { status: 500 })
     }
-    return Response.json(data)
+    return NextResponse.json(data)
   } catch (error) {
     console.log('Catch error:', error)
-    return Response.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
