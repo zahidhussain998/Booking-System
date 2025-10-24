@@ -56,6 +56,7 @@ export const addRoom = createAsyncThunk<Room, Omit<Room, 'id'>>('rooms/add',
 
 
         })
+        
 
         if(!res.ok) throw new Error("faild to create")
 

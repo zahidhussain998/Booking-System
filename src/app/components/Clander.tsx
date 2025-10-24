@@ -4,14 +4,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from "react-redux";
 import { useParams } from "next/navigation"; // ✅ use this
-import supabase from "../lib/Supabase";
 import { RootState } from "../store/store";
-import SubscribeComponent from "./subcribe/Subcribe-Payment";
-import { EmailTemplate } from "./EmailTamplate";
-import Link from "next/link";
+
 import { createClient } from "@supabase/supabase-js";
 
- function CalendarComponent () {
+function CalendarComponent() {
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(new Date());
   const [finalPrice, setFinalPrice] = useState<number>(0);
   const [userLog, setUserLog] = useState("")
@@ -48,9 +45,9 @@ import { createClient } from "@supabase/supabase-js";
   const roomId = String(params.id);
 
   const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   //  find the correct room
   const selectedRoom = items?.find((room) => String(room.id) === roomId);
@@ -78,18 +75,18 @@ import { createClient } from "@supabase/supabase-js";
     }
   }, [selectedDateTime, selectedRoom]);
 
-  
-useEffect(() => {
-  async function getUserEmail() {
-    const { data } = await supabase.auth.getUser();
-    if (data?.user) {
-      setUserLog(data.user.email); // ✅ actual user email
-    } else {
-      console.error("No logged in user");
+
+  useEffect(() => {
+    async function getUserEmail() {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUserLog(data.user.email); // ✅ actual user email
+      } else {
+        console.error("No logged in user");
+      }
     }
-  }
-  getUserEmail();
-}, []);
+    getUserEmail();
+  }, []);
 
 
 
@@ -114,26 +111,26 @@ useEffect(() => {
 
     // Send email after adding to calendar
     const response = await fetch('/screens/send', {
-  method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      email: "zahidzahidhussain@gmail.com", // <-- pass the user’s email directly
-      firstName: userLog.split("@")[0],
-      room: selectedRoom.name,
-      date: selectedDateTime.toLocaleString(),
-    }),
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: "zahidzahidhussain@gmail.com", // <-- pass the user’s email directly
+        firstName: userLog.split("@")[0],
+        room: selectedRoom.name,
+        date: selectedDateTime.toLocaleString(),
+      }),
 
-    
-  })
-  
-  
-  if (response.ok) {
+
+    })
+
+
+    if (response.ok) {
       console.log('Email sent successfully')
     } else {
       console.error('Failed to send email:', response.status)
     }
-  } 
-  
+  }
+
 
 
 
@@ -156,33 +153,33 @@ useEffect(() => {
         />
       </div>
 
-      
 
 
-   <form className="" action={`/screens/checkout_sessions?roomId=${selectedRoom?.id}&checkIn=${selectedDateTime?.toISOString()}&price=${finalPrice}`} method="POST">
 
-      {finalPrice > 0 && (
-        <p className="border w-20 font-bold font-black mb-5">
-          Price: ${finalPrice}
-        </p>
-      )}
-      <section>
+      <form className="" action={`/screens/checkout_sessions?roomId=${selectedRoom?.id}&checkIn=${selectedDateTime?.toISOString()}&price=${finalPrice}`} method="POST">
 
-        <div className="flex flex-col w-70 space-y-2 ">
-        <button className=" cursor-pointer bg-yellow-500 text-black px-14 py-2 rounded-lg" type="submit" role="link">
-          pay via stripe
-        </button>
+        {finalPrice > 0 && (
+          <p className="border w-20 font-bold font-black mb-5">
+            Price: ${finalPrice}
+          </p>
+        )}
+        <section>
 
-        </div>
-      </section>
-</form>
-        
-        <button onClick={addToGoogleCalendar} className="cursor-pointer bg-yellow-500 text-black px-4 py-2 rounded-lg">
-  Add to Google Calendar
-</button>
+          <div className="flex flex-col w-70 space-y-2 ">
+            <button className=" cursor-pointer bg-yellow-500 text-black px-14 py-2 rounded-lg" type="submit" role="link">
+              pay via stripe
+            </button>
+
+          </div>
+        </section>
+      </form>
+
+      <button onClick={addToGoogleCalendar} className="cursor-pointer bg-yellow-500 text-black px-4 py-2 rounded-lg">
+        Add to Google Calendar
+      </button>
 
 
-        
+
 
 
 

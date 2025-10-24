@@ -11,7 +11,8 @@ function Page() {
   const [isUser, setIsUser] = useState(Boolean);
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  useEffect(() => { // why we use here the useeffect what;s benifit of it mean when the component of this slots mount it should fetch all the rooms 
+      //dependency will be the disptach because data gonna changing siminstially
     setIsUser(true);
     dispatch(fetchRooms() as any);
   }, [dispatch]);

@@ -1,29 +1,24 @@
-import React from 'react'
+import React, { PropsWithChildren } from 'react'
 
-function button(
-    {
-        name,
-        onClick,
-        disabled = false,
-        className = "",
-        ...props
-    }: {
-        name?: string;
+
+type buttonInfo = {
+     name?: string;
         onClick?: () => void;
         disabled?: boolean;
         className?: string;
-    
-    }
-) {
+        props:void;
+}
+
+function button(Button:buttonInfo) {
   return (
     <div>
         <button
-        onClick={onClick}
-        disabled={disabled}
-        className={`bg-blue-500 text-white px-4 py-2 rounded ${className}`}
-        {...props}
+        onClick={Button.onClick}
+        disabled={Button.disabled}
+        className={`bg-blue-500 text-white px-4 py-2 rounded ${Button.className}`}
+        {...Button.props}
         >
-            {name || "Click Me"}
+            {Button.name || "Click Me"}
 
         </button>
     </div>

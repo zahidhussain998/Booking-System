@@ -16,6 +16,8 @@ export default function AuthCallback() {
       if (error) {
         console.error("Session error:", error.message);
       }
+      
+
 
       if (session) {
         router.push("/dashboard"); // redirect where you want after login

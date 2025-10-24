@@ -18,22 +18,22 @@ type Inputs = {
   capacity: string;
   charge: string;
   square: string;
-  image_Url?: string   // 👈 store the public or signed URL here
+  image_Url?: string   // store the public or signed URL here
   created_at?: string
 };
 
 function Page() {
-  const router = useRouter();
-  const dispatch = useDispatch();
+  const router = useRouter(); // for navigation
+  const dispatch = useDispatch(); 
 
-  const uploadedImageUrl = useSelector((state: RootState) => state.user.uploadImage);
+  const uploadedImageUrl = useSelector((state: RootState) => state.user.uploadImage);// getting the image form the uploadImage
 
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<Inputs>(); //hook form for handling the user input filed easy to handling the events
 
 
 

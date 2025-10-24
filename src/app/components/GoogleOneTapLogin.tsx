@@ -50,7 +50,6 @@ const OneTapComponent = () => {
             nonce,
           })
 
-          console.log(data)
 
           if (error) throw error
           console.log('Session data: ', data)
