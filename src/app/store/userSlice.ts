@@ -68,7 +68,6 @@ export const addRoom = createAsyncThunk<Room, Omit<Room, 'id'>>('rooms/add',
 
 export const uploadImage = createAsyncThunk<string, File>('rooms/upload',
     async(file:File) => {
-        console.log("the image is reached here")
         const filePath = `rooms/${Date.now()}-${file.name}`
 
         const {error} = await supabase.storage
@@ -81,8 +80,7 @@ export const uploadImage = createAsyncThunk<string, File>('rooms/upload',
 
         const {data} = supabase.storage.from("rooms_bucket").getPublicUrl(filePath)
 
-        console.log(data, "the image is uploaded")
-
+        
         return data.publicUrl
     }
 )

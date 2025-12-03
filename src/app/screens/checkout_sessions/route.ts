@@ -6,7 +6,7 @@ import supabase from '@/app/lib/Supabase'
 
 export async function POST(request: NextRequest) {
       
-     const url = new URL(request.url)
+const url = new URL(request.url)
 const roomId = url.searchParams.get('roomId')
 const checkIn = url.searchParams.get('checkIn')
 const price = url.searchParams.get('price')
@@ -56,7 +56,7 @@ const price = url.searchParams.get('price')
         },
       ],
       mode: 'payment',
-      success_url: `${origin}/screens/PostBooking?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/screens/slots?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?canceled=true`,
      metadata: {
   room_id: roomId,
