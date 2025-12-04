@@ -56,7 +56,7 @@ const price = url.searchParams.get('price')
         },
       ],
       mode: 'payment',
-      success_url: `${origin}/screens/slots?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/screens/slots`,
       cancel_url: `${origin}/?canceled=true`,
      metadata: {
   room_id: roomId,

@@ -3,7 +3,7 @@ import { RootState } from '@/app/store/store'
 import { fetchRooms } from '@/app/store/userSlice'
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import Clendar from '@/app/components/Clander'
+import Clendar from '@/app/components/MainClanderUi'
 import { useParams } from 'next/navigation'
 
 function Page() {

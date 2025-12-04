@@ -1,10 +1,9 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 // import Login from '../screens/Login/page'
-import Link from 'next/link'
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-
+import Link from "next/link";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 import {
   Navbar,
@@ -18,149 +17,130 @@ import {
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 function Home() {
+  const [user, setUser] = useState<any>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const [user, setUser] = useState<any>(null)
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-
-
-  const supabase = createClientComponentClient()
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
 
-    const getUser  = async () => {
-      const {data} = await supabase.auth.getUser()
+      setUser(data.user);
+    };
 
-      setUser(data.user)
+    getUser();
 
-    }
-
-    getUser()
-
-
-    const {data: listener} = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-   
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
 
     return () => {
-      listener.subscription.unsubscribe()
-    }
- 
+      listener.subscription.unsubscribe();
+    };
+  }, [supabase]);
 
-    
-  }, [supabase])
+  const handleSingOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
 
-
-  
-  const  handleSingOut = async() => {
-     await supabase.auth.signOut()
-    setUser(null)  
- }
-
- const navItems = [
-   {
-     name: "Home",
-     link: "/",
-   },
+  const navItems = [
+    {
+      name: "Home",
+      link: "/",
+    },
     {
       name: "Create-Slot",
       link: "/screens/PostBooking",
     },
-   
+
     {
       name: "Booked-Slots",
       link: "/screens/allbooked",
     },
   ];
- 
-
 
   return (
-
     <div>
-    {/* Background grid - only visible behind content */}
-<div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"><div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-yellow-400 opacity-20 blur-[100px]"></div></div>    <div className=' sticky top-0 z-40'>
-
+      {/* Background grid - only visible behind content */}
+      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
+        <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-yellow-400 opacity-20 blur-[100px]"></div>
+      </div>{" "}
+      <div className=" sticky top-0 z-40">
         <div className="relative w-full">
-      <Navbar>
-        {/* Desktop Navigation */}
-        <NavBody>
-          <NavbarLogo />
-          <NavItems items={navItems} />
-          <div className="flex items-center gap-4">
-              <NavbarButton
-                variant="primary"
-                className="w-full"
-              >
-            {!user ?
-             (
-              
-              <Link href="/screens/login">Login</Link>
-            ):(
-            <button className='cursor-pointer bg-amber-200 rounded-e-full' onClick={handleSingOut}>Sign Out</button>
+          <Navbar>
+            {/* Desktop Navigation */}
+            <NavBody>
+              <NavbarLogo />
+              <NavItems items={navItems} />
+              <div className="flex items-center gap-4">
+                <NavbarButton variant="primary" className="w-full">
+                  {!user ? (
+                    <Link href="/screens/login">Login</Link>
+                  ) : (
+                    <button
+                      className="cursor-pointer bg-amber-200 rounded-e-full"
+                      onClick={handleSingOut}
+                    >
+                      Sign Out
+                    </button>
+                  )}
+                </NavbarButton>
+              </div>
+            </NavBody>
 
-             )}
+            {/* Mobile Navigation */}
+            <MobileNav>
+              <MobileNavHeader>
+                <NavbarLogo />
+                <MobileNavToggle
+                  isOpen={isMobileMenuOpen}
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                />
+              </MobileNavHeader>
 
-              </NavbarButton>
-          </div>
-        </NavBody>
- 
-        {/* Mobile Navigation */}
-        <MobileNav>
-          <MobileNavHeader>
-            <NavbarLogo />
-            <MobileNavToggle
-              isOpen={isMobileMenuOpen}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            />
-          </MobileNavHeader>
- 
-          <MobileNavMenu
-            isOpen={isMobileMenuOpen}
-            onClose={() => setIsMobileMenuOpen(false)}
-          >
-            {navItems.map((item, idx) => (
-              <a
-                key={`mobile-link-${idx}`}
-                href={item.link}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="relative text-neutral-600 dark:text-neutral-300"
+              <MobileNavMenu
+                isOpen={isMobileMenuOpen}
+                onClose={() => setIsMobileMenuOpen(false)}
               >
-                <span className="block">{item.name}</span>
-              </a>
-            ))}
-            <div className="flex w-full flex-col gap-4">
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Login
-              </NavbarButton>
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Book a call
-              </NavbarButton>
-            </div>
-          </MobileNavMenu>
-        </MobileNav>
-      </Navbar>
- 
-      {/* Navbar */}
+                {navItems.map((item, idx) => (
+                  <a
+                    key={`mobile-link-${idx}`}
+                    href={item.link}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="relative text-neutral-600 dark:text-neutral-300"
+                  >
+                    <span className="block">{item.name}</span>
+                  </a>
+                ))}
+                <div className="flex w-full flex-col gap-4">
+                  <NavbarButton
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    variant="primary"
+                    className="w-full"
+                  >
+                    Login
+                  </NavbarButton>
+                  <NavbarButton
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    variant="primary"
+                    className="w-full"
+                  >
+                    Book a call
+                  </NavbarButton>
+                </div>
+              </MobileNavMenu>
+            </MobileNav>
+          </Navbar>
+
+          {/* Navbar */}
+        </div>
+      </div>
     </div>
-        
-     
-    </div>
-    
-    </div>
-
-
-  )
+  );
 }
 
-export default Home
+export default Home;
